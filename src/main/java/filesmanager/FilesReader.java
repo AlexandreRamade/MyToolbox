@@ -148,7 +148,7 @@ public class FilesReader {
     private static Map<String, String> extractColumnsOfCsvLine(String line, Map<String, Integer> columnsPositions) {
         Map<String, String> datas = new HashMap<>();
         String[] rawDatas = line.split(CSV_SEPARATOR);
-        columnsPositions.entrySet().stream().forEach(entry -> datas.put(entry.getKey(), rawDatas[entry.getValue()]));
+        columnsPositions.entrySet().stream().filter(entry -> entry.getValue() < rawDatas.length).forEach(entry -> datas.put(entry.getKey(), rawDatas[entry.getValue()]));
         return datas;
     }
 

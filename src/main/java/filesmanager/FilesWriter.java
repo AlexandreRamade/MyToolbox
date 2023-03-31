@@ -165,6 +165,14 @@ public class FilesWriter {
         }
         csvContent.append(LINE_BREAK);
 
+        //complète les données manquantes avec des chaines vides si nécéssaire
+        // afin qu'il n'y ai pas de décalage dans les colones du fichier
+        titles.stream().forEach(title -> datas.stream().forEach(mapData -> {
+            if(!mapData.containsKey(title)) {
+                mapData.put(title, "");
+            }
+        }));
+
         // pour chaque map de la liste :
         csvContent.append(datas.stream().map(map -> map.entrySet().stream()
                         // filtre les valeurs attendues dans la liste des titres des colonnes
