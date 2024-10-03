@@ -1,7 +1,10 @@
 package listtools;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ListTools {
 
@@ -41,6 +44,21 @@ public class ListTools {
         Integer somme = coll.stream().reduce(0, (x, y) -> x + y);
         Integer sommeRef = (int) ((2 * initialValue + (coll.size() - 1) * step) * coll.size() * 0.5);
         return Integer.compare(somme, sommeRef) == 0;
+    }
+    
+    /**
+     * filterListFromIndex </br>
+     * <p>
+     * Méthodes utilitaires permettant de filtrer une liste en ne retenant que les éléments correspondants aux index passés en second paramètre
+     * </p>
+     * 
+     * @param <T>
+     * @param listToFilter liste à filtrer
+     * @param indexList liste des index des éléments à garder
+     * @return la liste filtrée
+     */
+    public static <T> List<T> filterListFromIndex(List<T> listToFilter, List<Integer> indexList) {
+    	return IntStream.range(0, listToFilter.size()).filter(indexList::contains).mapToObj(listToFilter::get).collect(Collectors.toList());
     }
 
 }
