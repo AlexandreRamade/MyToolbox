@@ -84,4 +84,25 @@ public class StringTools {
         }
         return integers;
     }
+    
+    public static String replaceNthOccurrence(String regex, int nth, String replacement, String source) {
+    	Matcher matcher = Pattern.compile(regex).matcher(source);
+    	StringBuilder sourceSB = new StringBuilder(source);
+    	int currentOccurrence = 0;
+    	while(matcher.find()) {
+    		if(++currentOccurrence == nth) {
+    			return sourceSB.replace(matcher.start(), matcher.end(), replacement).toString();
+    		}
+    	}
+    	return source;
+    }
+    
+    public static String replaceLast(String regex, String replacement, String source) {
+    	int lastIndex = source.lastIndexOf(regex);
+    	if(lastIndex != -1) {
+    		return new StringBuilder(source).replace(lastIndex, lastIndex + regex.length(), replacement).toString();
+    	}
+    	return source;
+    }
+    
 }
