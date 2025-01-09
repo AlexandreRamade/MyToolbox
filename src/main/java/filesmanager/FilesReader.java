@@ -22,17 +22,33 @@ import java.util.stream.Stream;
  */
 public class FilesReader {
 
+	private final static String ALL_STRING_REGEX = ".*";
+	
     private static String CSV_SEPARATOR = ";";
 
     public static void setCsvSeparator(String csvSeparator) {
         CSV_SEPARATOR = csvSeparator;
     }
+    
+    /**
+     * readAllLinesInFiles <br>
+     * <p>
+     * Extrait le contenu d'un ou plusieurs fichier(s)
+     * </p>
+     * 
+     * @param path adresse des fichiers
+     * @param files noms des fichiers
+     * @return liste des lignes des fichiers
+     */
+    public static List<String> readAllLinesInFiles(String path, List<String> files) {
+    	return readAndInterpretLinesInFiles(path, files, ALL_STRING_REGEX, Function.identity());
+    }
 
     /**
      * readAndInterpretLinesInFiles <br>
      * <p>
-     * Charge le contenu d'un ou plusieurs fichier et recherche/extrait de son
-     * contenu la valeur spécifiée
+     * Charge le contenu d'un ou plusieurs fichier(s), extrait de son contenu la valeur correspondant au pattern
+     * et la restitue sous forme d'objet selon l'interpréteur donné en paramétre
      * </p>
      *
      * @param <R>              type d'objet à instancier à partir des données des

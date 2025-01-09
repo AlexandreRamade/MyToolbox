@@ -1,6 +1,7 @@
 package listtools;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,22 +30,53 @@ public class ListTools {
     /**
      * incremented <br>
      * <p>
-     * Méthode utilitaire permettant de déterminer si une liste de nombre est bien incrémentée de N
-     * en N à partir de la valeur initiale passée en paramètre
+     * Méthode utilitaire permettant de déterminer si une collection de nombre est bien incrémentée de N
+     * en N entre la valeur minimale et la valeur maximale
      * </p>
      *
      * @param coll         collection de valeurs à tester
-     * @param step         valeur du pas d'incrémentation
-     * @param initialValue valeur initiale attendu
-     * @return true si la valeur minimale correspond à celle passée en paramètres et que tous les
-     * intermédiaires de N en N jusqu'à la valeur maximale sont présents dans la liste,
-     * false sinon
+     * @return un objet de type {@link ListInfos} contenant les informations sur la collection de nombre,
+     * notamment le boolean incremented = true si la liste contient tous les intermédiaires de N en N entre
+     * la valeur minimale et la valeur maximale
+     * 
      */
-    public static boolean incremented(Collection<Integer> coll, Integer step, Integer initialValue) {
-        Integer somme = coll.stream().reduce(0, (x, y) -> x + y);
-        Integer sommeRef = (int) ((2 * initialValue + (coll.size() - 1) * step) * coll.size() * 0.5);
-        return Integer.compare(somme, sommeRef) == 0;
+    public static ListInfos incremented(Collection<Integer> coll) {
+        if(coll != null && coll.size() > 1) {
+        	List<Integer> sortedList = coll.stream().sorted().distinct().collect(Collectors.toList());
+        	int firstValue = sortedList.get(0);
+        	int lastValue = sortedList.get(sortedList.size() - 1);
+        	
+        	if(coll.size() != sortedList.size()) {
+        		return ListInfos.buildNotIncrementedListInfos(isOrdered(coll), firstValue, lastValue);
+        	}
+        	
+        	int step = (lastValue - firstValue) / (sortedList.size() - 1);
+        	        	
+        	for(int i = 1; i < sortedList.size(); i++) {
+        		if(sortedList.get(i - 1) + step != sortedList.get(i)) {
+        			return ListInfos.buildNotIncrementedListInfos(isOrdered(coll), firstValue, lastValue);
+        		}
+        	}
+        	return ListInfos.buildIncrementedListInfos(isOrdered(coll), firstValue, lastValue, step);
+        }
+        
+        return null;
     }
+    
+
+    public static <T extends Comparable<? super T>> boolean isOrdered(Iterable<T> coll) {
+    	  Iterator<T> i = coll.iterator();
+    	  if (i.hasNext()) {
+    	    T previous = i.next();
+    	    while (i.hasNext()) {
+    	      T current = i.next();
+    	      if (previous.compareTo(current) > 0)
+    	        return false;
+    	      previous = current;
+    	    }
+    	  }
+    	  return true;
+    	}
     
     /**
      * filterListFromIndex </br>

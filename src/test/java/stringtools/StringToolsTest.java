@@ -1,5 +1,6 @@
 package stringtools;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -15,7 +16,7 @@ public class StringToolsTest {
 
 	@Test
 	public void extractAllIntegerNumbers_multiplesNumbers() {
-		assertThat(StringTools.extractAllIntegerNumbers(EXTRACT_ALL_NUMBERS_TEST_STRING), CoreMatchers.hasItems(1, 2, 3, 10, 22, 5, 3003));
+		assertThat(StringTools.extractAllIntegerNumbers(EXTRACT_ALL_NUMBERS_TEST_STRING), hasItems(1, 2, 3, 10, 22, 5, 3003));
 	}
 	
 	

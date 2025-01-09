@@ -2,6 +2,7 @@ package stringtools;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -49,18 +50,25 @@ public class Increment {
 	 * Défini les types et les limites des caractères incrémentables
 	 */
 	private enum IncrementType {
-		DIGIT('0', '9'), LOWERCASE('a', 'z'), UPPERCASE('A', 'Z');
+		DIGIT('1', '0', '9'), LOWERCASE('a', 'a', 'z'), UPPERCASE('A', 'A', 'Z');
 
+		/**
+		 * caractère à ajouter en début de séquence
+		 */
+		private char newChar;
+		
 		/**
 		 * première valeur de la séquence
 		 */
 		private char start;
+		
 		/**
 		 * dernière valeur possible de la séquence
 		 */
 		private char end;
 
-		private IncrementType(char start, char end) {
+		private IncrementType(char newChar, char start, char end) {
+			this.newChar = newChar;
 			this.start = start;
 			this.end = end;
 		}
@@ -177,14 +185,10 @@ public class Increment {
 	 */
 	public String increment(String prefix, String prefixSeparator, String suffixSeparator, String suffix,
 			String extension) {
-		StringBuilder result = new StringBuilder(prefix).append(prefixSeparator);
-		if (activeIncrement) {
-			this.count++;
-			this.chars = incrementChars(chars, chars.length - 1);
-		} else {
-			activeIncrement = !activeIncrement;
-		}
-		return result.append(chars).append(suffixSeparator).append(suffix).append(extension).toString();
+		return new StringBuilder(prefix).append(prefixSeparator)
+				.append(increment())
+				.append(suffixSeparator).append(suffix)
+				.append(extension).toString();
 	}
 
 	/**
@@ -255,8 +259,7 @@ public class Increment {
 	 */
 	private char[] incrementChars(char[] chars, int index) {
 		if (index > -1) {
-			IncrementType incrementType = Character.isDigit(chars[index]) ? IncrementType.DIGIT
-					: Character.isUpperCase(chars[index]) ? IncrementType.UPPERCASE : IncrementType.LOWERCASE;
+			IncrementType incrementType = findCharType.apply(chars[index]);
 
 			if (chars[index] == incrementType.end) {
 				chars[index] = incrementType.start;
@@ -266,15 +269,18 @@ public class Increment {
 			}
 		} else if (addNewChar && Objects.nonNull(uniqueType)) {
 			chars = new char[chars.length + 1];
-			for (int i = 0; i < chars.length; i++) {
+			chars[0] = uniqueType.newChar;
+			for (int i = 1; i < chars.length; i++) {
 				chars[i] = uniqueType.start;
-			}
-			if (uniqueType == IncrementType.DIGIT) {
-				chars[0] = '1';
 			}
 		}
 		return chars;
 	}
+	
+	private Function<Character, IncrementType> findCharType = (c) -> Character.isDigit(c) ? IncrementType.DIGIT : 
+		Character.isUpperCase(c) ? IncrementType.UPPERCASE : 
+			IncrementType.LOWERCASE;
+	
 
 	/* ***** ***** ***** ***** GETTEURS / SETTEURS ***** ***** ***** ***** */
 
