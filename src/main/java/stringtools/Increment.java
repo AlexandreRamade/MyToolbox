@@ -16,15 +16,7 @@ import java.util.stream.IntStream;
  * @author a-ramade
  * @since 09/2022
  */
-public class Increment {
-
-	public static final int BEFORE = 1;
-	public static final int AFTER = 2;
-
-	/**
-	 * Compteur
-	 */
-	private int count = 1;
+public class Increment extends IncrementAbstr {
 
 	/**
 	 * Séquence incrémentée
@@ -32,20 +24,11 @@ public class Increment {
 	private char[] chars;
 
 	/**
-	 * Difini si tous les caractères ont le même type
+	 * Défini si tous les caractères ont le même type
 	 */
 	private IncrementType uniqueType;
 
-	/**
-	 * Option d'ajout de caractère si séquence limite atteinte
-	 */
-	private boolean addNewChar = false;
-
-	/**
-	 * Active l'incrémentation après avoir restitué la première valeur
-	 */
-	private boolean activeIncrement = false;
-
+	
 	/**
 	 * Défini les types et les limites des caractères incrémentables
 	 */
@@ -86,7 +69,6 @@ public class Increment {
 	 * @param firstValue valeur de départ
 	 */
 	public Increment(String firstValue) {
-		super();
 		this.initIncrement(firstValue);
 	}
 
@@ -118,7 +100,6 @@ public class Increment {
 	 *                             incrémentation
 	 */
 	public Increment(String firstValue, boolean addNewChar, boolean incrementOnFirstCall) {
-		super();
 		this.initIncrement(firstValue);
 		this.addNewChar = addNewChar;
 		this.activeIncrement = incrementOnFirstCall;
@@ -133,6 +114,7 @@ public class Increment {
 	 *
 	 * @param firstValue première valeur de la séquence
 	 */
+	@Override
 	public void initIncrement(String firstValue) {
 		if (firstValue != null && firstValue.trim().length() > 0) {
 			this.chars = firstValue.toCharArray();
@@ -158,82 +140,17 @@ public class Increment {
 	 *
 	 * @return la séquence incrémentée d'une unité
 	 */
+	@Override
 	public String increment() {
-		if (activeIncrement) {
-			this.count++;
+		this.count++;
+		if (this.activeIncrement) {
 			this.chars = incrementChars(chars, chars.length - 1);
 		} else {
-			activeIncrement = !activeIncrement;
+			this.activeIncrement = !this.activeIncrement;
 		}
 		return String.valueOf(chars);
 	}
 
-	/**
-	 * increment<br>
-	 * <p>
-	 * Méthode permettant d'obtenir une chaine de caractère incluant la séquence
-	 * incrémenté d'une unité <br>
-	 * Format de la chaine : prefix-sequenceincrémentée-sufixe.extension
-	 * </p>
-	 *
-	 * @param prefix
-	 * @param prefixSeparator
-	 * @param suffixSeparator
-	 * @param suffix
-	 * @param extension
-	 * @return chaine contenant la séquence incrémentée
-	 */
-	public String increment(String prefix, String prefixSeparator, String suffixSeparator, String suffix,
-			String extension) {
-		return new StringBuilder(prefix).append(prefixSeparator)
-				.append(increment())
-				.append(suffixSeparator).append(suffix)
-				.append(extension).toString();
-	}
-
-	/**
-	 * getIncrementedList </br>
-	 * <p>
-	 * Méthode générant une liste de séquences incrémentées de taille indiquée en
-	 * paramétre
-	 * </p>
-	 * 
-	 * @param listSize taille de la liste de séquences à générée
-	 * @return la liste des séquences incrémentée
-	 */
-	public List<String> getIncrementedList(int listSize) {
-		return IntStream.range(0, listSize).mapToObj(i -> this.increment()).collect(Collectors.toList());
-	}
-
-	/**
-	 * addIncrementedSequenceToListItems </br>
-	 * <p>
-	 * Méthode permétant d'ajouter une séquence incrémentée en début ou en fin de
-	 * chaine de caractère pour chaque éléments d'une liste de chaine de caractère
-	 * </p>
-	 * 
-	 * @param list      liste des chaines de caractères
-	 * @param separator séparateur
-	 * @param position  {@link Increment#BEFORE} = séquence ajoutée en début de
-	 *                  chaine, {@link Increment#AFTER} = séquence ajoutée en fin de
-	 *                  chaine
-	 * @return la liste dont la séquence incrémentée à été ajoutée à chaque élément
-	 */
-	public List<String> addIncrementedSequenceToListItems(List<String> list, String separator, int position) {
-		return list.stream().map(str -> addIncrementedSequenceToListItem(str, separator, position))
-				.collect(Collectors.toList());
-	}
-
-
-	/* ***** ***** METHODES UTILITAIRES ***** ***** */
-
-	
-	private String addIncrementedSequenceToListItem(String item, String separator, int position) {
-		if (position == AFTER) {
-			return new StringBuilder(item).append(separator).append(increment()).toString();
-		}
-		return new StringBuilder(increment()).append(separator).append(item).toString();
-	}
 	
 	/* ***** ***** METHODES DE TRAITEMENT ***** ***** */
 
@@ -267,7 +184,7 @@ public class Increment {
 			} else {
 				++chars[index];
 			}
-		} else if (addNewChar && Objects.nonNull(uniqueType)) {
+		} else if (this.addNewChar && Objects.nonNull(uniqueType)) {
 			chars = new char[chars.length + 1];
 			chars[0] = uniqueType.newChar;
 			for (int i = 1; i < chars.length; i++) {
@@ -284,10 +201,7 @@ public class Increment {
 
 	/* ***** ***** ***** ***** GETTEURS / SETTEURS ***** ***** ***** ***** */
 
-	public int getCount() {
-		return count;
-	}
-
+	@Override
 	public String getCurrentValue() {
 		return String.valueOf(chars);
 	}
