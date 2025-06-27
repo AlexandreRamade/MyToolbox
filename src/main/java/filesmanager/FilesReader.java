@@ -31,6 +31,20 @@ public class FilesReader {
     }
     
     /**
+     * readAllLinesInFile <br>
+     * <p>
+     * Extrait le contenu d'un fichier
+     * </p>
+     * 
+     * @param path adresse du fichier
+     * @param file nom du fichier
+     * @return liste des lignes du fichier
+     */
+    public static List<String> readAllLinesInFile(String path, String file) {
+    	return readAndInterpretLinesInFiles(path, Arrays.asList(file), ALL_STRING_REGEX, Function.identity());
+    }
+    
+    /**
      * readAllLinesInFiles <br>
      * <p>
      * Extrait le contenu d'un ou plusieurs fichier(s)
