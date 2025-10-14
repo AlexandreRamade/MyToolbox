@@ -9,6 +9,7 @@ import java.nio.file.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -168,7 +169,7 @@ public class FilesWriter {
         //complète les données manquantes avec des chaines vides si nécéssaire
         // afin qu'il n'y ai pas de décalage dans les colones du fichier
         titles.stream().forEach(title -> datas.stream().forEach(mapData -> {
-            if(!mapData.containsKey(title)) {
+            if (!mapData.containsKey(title)) {
                 mapData.put(title, "");
             }
         }));
@@ -185,6 +186,44 @@ public class FilesWriter {
                 .collect(Collectors.joining(LINE_BREAK)));
 
         return csvContent.toString();
+    }
+
+    /**
+     * replaceLinesInFile <br>
+     * <p>
+     *     Remplace les lignes correspondant avec le pattern par une nouvelle ligne
+     * </p>
+     * @param absolutePath adresse absolue du fichier
+     * @param fileName nom du fichier
+     * @param patternLineIdentifiant pattern permettant d'identifier les lignes à remplacer
+     * @param newLineContent contenu de la nouvelle ligne
+     * @return le nombre de lignes ayant été remplacées dans le fichier
+     */
+    public static int replaceLinesInFile(String absolutePath, String fileName, String patternLineIdentifiant, String newLineContent) {
+        int linesReplaced = 0;
+        try {
+            Path filePath = Paths.get(absolutePath, fileName);
+            if (!Files.exists(filePath) || !Files.isRegularFile(filePath)) {
+                throw new IOException("Le fichier n'existe pas ou n'est pas un fichier normal");
+            }
+
+            Pattern pattern = Pattern.compile(patternLineIdentifiant);
+
+            List<String> lines = Files.readAllLines(filePath);
+            for (int i = 0; i < lines.size(); i++) {
+                if (pattern.matcher(lines.get(i)).matches()) {
+                    lines.set(i, newLineContent);
+                    linesReplaced++;
+                }
+            }
+            if (linesReplaced > 0) {
+                Files.write(filePath, lines, ENCODING);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return linesReplaced;
     }
 
 }
