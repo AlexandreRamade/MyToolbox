@@ -96,7 +96,7 @@ public class StringTools {
     	}
     	return source;
     }
-    
+
     public static String replaceLast(String regex, String replacement, String source) {
     	int lastIndex = source.lastIndexOf(regex);
     	if(lastIndex != -1) {
@@ -104,5 +104,19 @@ public class StringTools {
     	}
     	return source;
     }
-    
+
+    public static int indexOfNthOccurrence(String regex, int nth, String source) {
+        if (source == null) {
+            return -1;
+        }
+        Matcher matcher = Pattern.compile(regex).matcher(source);
+        int currentOccurrence = 0;
+        while(matcher.find()) {
+            if(++currentOccurrence == nth) {
+                return matcher.start();
+            }
+        }
+        return -1;
+    }
+
 }

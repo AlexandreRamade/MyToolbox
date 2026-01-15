@@ -13,6 +13,7 @@ public class StringToolsTest {
 	
 	private static final String EXTRACT_ALL_NUMBERS_TEST_STRING = "1 2 (3), 10,22-5 et3003Hgl";
 	private static final String REPLACE_NTH_OCCURRENCE_TEST_STRING = "1, 2, 3, 4, 5, 6,";
+    private static final String INDEX_NTH_OCCURRENCE_TEST_STRING = "1; abc;; ;5.2;gh,i;";
 
 	@Test
 	public void extractAllIntegerNumbers_multiplesNumbers() {
@@ -46,6 +47,11 @@ public class StringToolsTest {
 	public void replaceNthOccurrence_noOccurrenceFindInSourceString() {
 		assertThat(StringTools.replaceNthOccurrence("motif_inconnu", 2, "motif_remplacé", REPLACE_NTH_OCCURRENCE_TEST_STRING), is(REPLACE_NTH_OCCURRENCE_TEST_STRING));
 	}
+
+    @Test
+    public void replaceNthOccurrence_lessOccurrencesThanNth() {
+        assertThat(StringTools.replaceNthOccurrence(",", 10, "motif_remplacé", REPLACE_NTH_OCCURRENCE_TEST_STRING), is(REPLACE_NTH_OCCURRENCE_TEST_STRING));
+    }
 	
 	@Test
 	public void replaceLast_noFindInSourceString() {
@@ -58,4 +64,23 @@ public class StringToolsTest {
 		assertThat(StringTools.replaceLast("4,", "last_motif_remplacé", REPLACE_NTH_OCCURRENCE_TEST_STRING), is("1, 2, 3, last_motif_remplacé 5, 6,"));
 		assertThat(StringTools.replaceLast(",", " last_motif_remplacé", REPLACE_NTH_OCCURRENCE_TEST_STRING), is("1, 2, 3, 4, 5, 6 last_motif_remplacé"));
 	}
+
+    @Test
+    public void indexOfNthOccurrence_noOccurrenceFind() {
+    	assertThat(StringTools.indexOfNthOccurrence("motif_inconnu", 2, INDEX_NTH_OCCURRENCE_TEST_STRING), is(-1));
+    }
+
+    @Test
+    public void indexOfNthOccurrence_nthOccurrenceFind() {
+    	assertThat(StringTools.indexOfNthOccurrence(";", 1, INDEX_NTH_OCCURRENCE_TEST_STRING), is(1));
+    	assertThat(StringTools.indexOfNthOccurrence(";", 2, INDEX_NTH_OCCURRENCE_TEST_STRING), is(6));
+    	assertThat(StringTools.indexOfNthOccurrence(";", 3, INDEX_NTH_OCCURRENCE_TEST_STRING), is(7));
+    	assertThat(StringTools.indexOfNthOccurrence(";", 4, INDEX_NTH_OCCURRENCE_TEST_STRING), is(9));
+    	assertThat(StringTools.indexOfNthOccurrence(";", 6, INDEX_NTH_OCCURRENCE_TEST_STRING), is(18));
+    }
+
+    @Test
+    public void indexOfNthOccurrence_lessOccurrencesThanNth() {
+    	assertThat(StringTools.indexOfNthOccurrence(";", 10, INDEX_NTH_OCCURRENCE_TEST_STRING), is(-1));
+    }
 }
