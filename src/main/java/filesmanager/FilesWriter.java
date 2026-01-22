@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -117,19 +118,44 @@ public class FilesWriter {
      * @param absolutePath                          adresse absolue du fichier
      * @param fileName                              nom du fichier avec son extension
      * @param datas                                 contenu à formatter
-     * @param titles                                liste des titres des colonnes
      * @param overwriteOrAddToExistingContentOption option d'écriture (écrasement ou ajout à la suite du contenu
      *                                              existant)
      * @see {@link this#generateCsvContent(Collection, List, boolean)}
      * @see {@link this#writeFile(String, String, String, OpenOption)}
      */
     public static void writeCsvFile(String absolutePath, String fileName, Collection<Map<String, String>> datas,
-                                    List<String> titles, OpenOption overwriteOrAddToExistingContentOption) {
+                                    OpenOption overwriteOrAddToExistingContentOption) {
 
         // affiche les titres sur la première ligne si option 'écraser fichier existant'
         // si option 'compléter le contenu à la suite', pas affichage des titres
         writeFile(absolutePath, fileName,
-                generateCsvContent(datas, titles,
+                generateCsvContent(datas, Collections.EMPTY_LIST,
+                        OVERWRITE_EXISTING_CONTENT.equals(overwriteOrAddToExistingContentOption)),
+                overwriteOrAddToExistingContentOption);
+    }
+
+    /**
+     * writeCsvFile <br>
+     * <p>
+     * Formate puis écrit dans un fichier des données au format CSV
+     * </p>
+     *
+     * @param absolutePath                          adresse absolue du fichier
+     * @param fileName                              nom du fichier avec son extension
+     * @param datas                                 contenu à formatter
+     * @param columnTitles                          liste des titres des colonnes
+     * @param overwriteOrAddToExistingContentOption option d'écriture (écrasement ou ajout à la suite du contenu
+     *                                              existant)
+     * @see {@link this#generateCsvContent(Collection, List, boolean)}
+     * @see {@link this#writeFile(String, String, String, OpenOption)}
+     */
+    public static void writeCsvFile(String absolutePath, String fileName, Collection<Map<String, String>> datas,
+                                    List<String> columnTitles, OpenOption overwriteOrAddToExistingContentOption) {
+
+        // affiche les titres sur la première ligne si option 'écraser fichier existant'
+        // si option 'compléter le contenu à la suite', pas affichage des titres
+        writeFile(absolutePath, fileName,
+                generateCsvContent(datas, columnTitles,
                         OVERWRITE_EXISTING_CONTENT.equals(overwriteOrAddToExistingContentOption)),
                 overwriteOrAddToExistingContentOption);
     }
@@ -152,13 +178,17 @@ public class FilesWriter {
      * </div>
      *
      * @param datas                  contenu à formatter sous la forme d'une collection de Map
-     * @param titles                 liste ordonnée des titres des colones
+     * @param columnTitles           liste ordonnée des titres des colones
      * @param writeTitlesOnFirstLine option d'affichage du nom des colones sur la première ligne
      * @return les données filtrées et ordonnées au format CSV en une simple chaine
      * de caractères
      */
-    public static String generateCsvContent(Collection<Map<String, String>> datas, List<String> titles,
+    public static String generateCsvContent(Collection<Map<String, String>> datas, List<String> columnTitles,
                                             boolean writeTitlesOnFirstLine) {
+
+        final List<String> titles = (columnTitles != null && columnTitles.isEmpty())
+                ? columnTitles
+                : datas.stream().findAny().get().keySet().stream().toList();
 
         StringBuilder csvContent = new StringBuilder();
         if (writeTitlesOnFirstLine) {

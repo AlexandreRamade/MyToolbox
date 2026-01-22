@@ -112,6 +112,18 @@ public class FilesReader {
         return null;
     }
 
+    public static List<Map<String, String>> readCsvFile(String absolutePath, String fileName, List<String> columnsTitles) {
+        return readCsvFiles(absolutePath, Collections.singletonList(fileName), columnsTitles);
+    }
+
+    public static List<Map<String, String>> readCsvFile(String absolutePath, String fileName) {
+        return readCsvFiles(absolutePath, Collections.singletonList(fileName), Collections.EMPTY_LIST);
+    }
+
+    public static List<Map<String, String>> readCsvFiles(String absolutePath, List<String> files) {
+        return readCsvFiles(absolutePath, files, Collections.EMPTY_LIST);
+    }
+
     /**
      * readCsvFiles <br>
      * <p>
@@ -121,17 +133,19 @@ public class FilesReader {
      *
      * @param absolutePath adresse des fichiers
      * @param files        noms de fichiers
-     * @param titles       titres des colonnes des données à extraire
+     * @param columnTitles       titres des colonnes des données à extraire (extrait toutes les collones si nulle ou vide)
      * @return la liste des données associées à chaque colonne sous forme de Map
      *         titre-valeur
      */
-    public static List<Map<String, String>> readCsvFiles(String absolutePath, List<String> files, List<String> titles) {
+    public static List<Map<String, String>> readCsvFiles(String absolutePath, List<String> files, List<String> columnTitles) {
         List<Map<String, String>> datas = new LinkedList<>();
+
+        boolean readAllColumns = columnTitles == null || columnTitles.isEmpty();
 
         for (String fileName : files) {
 
             // map associant le titre de la colonne et sa position dans le fichier CSV
-            Map<String, Integer> columnsPositions = new HashMap<>();
+            Map<String, Integer> columnsPositions = new LinkedHashMap<>();
 
             // récupère la première ligne du CSV pour déterminer la position des colonnes à
             // extraire
@@ -140,7 +154,7 @@ public class FilesReader {
                 if (titleLine.isPresent()) {
                     String[] columns = titleLine.get().split(CSV_SEPARATOR);
                     for (int i = 0; i < columns.length; i++) {
-                        if (titles.contains(columns[i])) {
+                        if (readAllColumns || columnTitles.contains(columns[i])) {
                             columnsPositions.put(columns[i], i);
                         }
                     }
@@ -176,7 +190,7 @@ public class FilesReader {
      * @return les données sous forme de map titre-donée
      */
     private static Map<String, String> extractColumnsOfCsvLine(String line, Map<String, Integer> columnsPositions) {
-        Map<String, String> datas = new HashMap<>();
+        Map<String, String> datas = new LinkedHashMap<>();
         String[] rawDatas = line.split(CSV_SEPARATOR);
         columnsPositions.entrySet().stream().filter(entry -> entry.getValue() < rawDatas.length).forEach(entry -> datas.put(entry.getKey(), rawDatas[entry.getValue()]));
         return datas;
