@@ -186,7 +186,7 @@ public class FilesWriter {
     public static String generateCsvContent(Collection<Map<String, String>> datas, List<String> columnTitles,
                                             boolean writeTitlesOnFirstLine) {
 
-        final List<String> titles = (columnTitles != null && columnTitles.isEmpty())
+        final List<String> titles = (columnTitles != null && !columnTitles.isEmpty())
                 ? columnTitles
                 : datas.stream().findAny().get().keySet().stream().toList();
 
