@@ -155,7 +155,9 @@ public class FilesReader {
                     String[] columns = titleLine.get().split(CSV_SEPARATOR);
                     for (int i = 0; i < columns.length; i++) {
                         if (readAllColumns || columnTitles.contains(columns[i])) {
-                            columnsPositions.put(columns[i], i);
+                            columnsPositions.put(
+                                    cleanCSVColumnTitle.apply(columns[i]),
+                                    i);
                         }
                     }
                 }
@@ -177,6 +179,11 @@ public class FilesReader {
 
         return datas;
     }
+
+    private static Function<String, String> cleanCSVColumnTitle = columnTitle -> columnTitle
+            .replace("\uFEFF", "")  // BOM UTF-8
+            .replace("\"", "")      // guillemets
+            .trim();                                // espaces, \r, \n, \t
 
     /**
      * extractColumnsOfCsvLine <br>
